@@ -60,4 +60,5 @@ class Podcast {
       progress: 0.5,
       ),
       ];
+
 }

@@ -12,8 +12,10 @@ class PlayerButtons extends StatelessWidget {
 
   final AudioPlayer audioPlayer;
 
+
   @override
   Widget build(BuildContext context) {
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

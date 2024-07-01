@@ -28,6 +28,14 @@ class _PodcastScreenState extends State<PodcastScreen> {
         Uri.parse('asset:///${podcast.url}'),
       ),
     );
+    
+  audioPlayer.durationStream.listen((duration) {
+    if (duration != null) {
+      int initialPositionMilliseconds = (podcast.progress * duration.inMilliseconds).toInt();
+      Duration initialPosition = Duration(milliseconds: initialPositionMilliseconds);
+      audioPlayer.seek(initialPosition);
+    }
+  });
   }
 
   @override
@@ -57,7 +65,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
           final totalDuration = audioPlayer.duration;
           final percentage = currentPosition.inMilliseconds / totalDuration!.inMilliseconds;
           podcast.progress = percentage;
-          print('Podcast progress: ${podcast.progress}');
           // Do something with the podcast duration
         },
       ),
@@ -82,11 +89,11 @@ class _AudioPlayer extends StatelessWidget {
   final Stream<SeekBarData> _seekBarDataStream;
   final AudioPlayer audioPlayer;
 
+
   @override
   Widget build(BuildContext context) {
 
     double screenWidth = MediaQuery.of(context).size.width;
-
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
@@ -132,6 +139,7 @@ class _AudioPlayer extends StatelessWidget {
             stream: _seekBarDataStream, 
             builder: (context, snapshot) {
               final positionData = snapshot.data;
+              //final leftPosition = Duration(milliseconds: (podcast.progress * (positionData?.duration?.inMilliseconds ?? 0)).toInt());
               return SeekBar(position: positionData?.position ?? Duration.zero, duration: positionData?.duration ?? Duration.zero,onChangeEnd: audioPlayer.seek,);
             }),
             PlayerButtons(audioPlayer: audioPlayer)
