@@ -71,6 +71,15 @@ class HomeScreen extends StatelessWidget {
                 podcast.creator,
                 style: const TextStyle(color: Colors.grey),
               ),
+              if (podcast.progress > 0) // Check if progress is not 0
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: LinearProgressIndicator(
+                    value: podcast.progress,
+                    backgroundColor: Colors.grey[300],
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
+                  ),
+                ),
             ],
           ),
         ),

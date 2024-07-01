@@ -51,7 +51,15 @@ class _PodcastScreenState extends State<PodcastScreen> {
       appBar: AppBar(
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
-        onPressed: () => Get.back(),
+        onPressed: () {
+          Get.back();
+          final currentPosition = audioPlayer.position;
+          final totalDuration = audioPlayer.duration;
+          final percentage = currentPosition.inMilliseconds / totalDuration!.inMilliseconds;
+          podcast.progress = percentage;
+          print('Podcast progress: ${podcast.progress}');
+          // Do something with the podcast duration
+        },
       ),
       backgroundColor: Colors.transparent,
       ),
