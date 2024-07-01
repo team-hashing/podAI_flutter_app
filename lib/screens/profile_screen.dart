@@ -48,39 +48,19 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildPodcastSection(List<Podcast> podcasts) {
     return Container(
       height: 200, // Adjust based on your layout
-      child: ListView.builder(      
+      child: ListView(
         shrinkWrap: true, // This tells the ListView to size itself based on the children's sizes
         scrollDirection: Axis.horizontal,
-        itemCount: podcasts.length,
-        itemBuilder: (context, index) {
-          final podcast = podcasts[index];
-          return Container(
-            width: 160, // Adjust based on your layout
-            padding: EdgeInsets.all(8),
-            child: Column(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      podcast.coverUrl,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Text(podcast.title, overflow: TextOverflow.ellipsis),
-                Text(podcast.creator, overflow: TextOverflow.ellipsis),
-                if (podcast.progress != null)
-                  LinearProgressIndicator(value: podcast.progress),
-              ],
-            ),
-          );
-        },
+        children: podcasts.map((podcast) => 
+          SizedBox(
+            width: 150, // Specify your desired width here
+            child: PodcastCard(podcast: podcast),
+          )
+        ).toList(),
       ),
     );
-  }
+}
 }

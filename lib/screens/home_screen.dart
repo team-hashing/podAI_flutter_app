@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:podai/models/models.dart';
+import 'package:podai/widgets/widgets.dart';
 
 
 
@@ -31,59 +32,9 @@ class HomeScreen extends StatelessWidget {
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
             childAspectRatio: 0.75,
-            children: Podcast.podcasts.map((podcast) => _buildPodcastCard(podcast)).toList(),
+            children: Podcast.podcasts.map((podcast) => PodcastCard(podcast: podcast)).toList(),
           ),
         ),
-    );
-  }
-
-  Widget _buildPodcastCard(Podcast podcast) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      elevation: 4,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(15),
-        onTap: () {
-          Get.toNamed('/podcast', arguments: podcast);
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Image.asset(
-                    podcast.coverUrl,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                podcast.title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                podcast.creator,
-                style: const TextStyle(color: Colors.grey),
-              ),
-              if (podcast.progress > 0) // Check if progress is not 0
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: LinearProgressIndicator(
-                    value: podcast.progress,
-                    backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
