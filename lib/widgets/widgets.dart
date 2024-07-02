@@ -5,3 +5,6 @@ export 'profile_header.dart';
 export 'placeholder_tab.dart';
 export 'create_widget_text_input_tab.dart';
 export 'podcast_card.dart';
+export 'section_title.dart';
+export 'podcast_section.dart';
+export 'horizontal_podcast_card.dart';

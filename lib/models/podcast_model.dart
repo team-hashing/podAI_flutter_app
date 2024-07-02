@@ -26,6 +26,48 @@ class Podcast {
       url: 'assets/audio/podcast.wav',
       coverUrl: 'assets/images/covers/cover.png',
     ),
+    Podcast(
+      title: 'The Joe Rogan Experience 2',
+      creator: 'Joe Rogan',
+      url: 'assets/audio/podcast.wav',
+      coverUrl: 'assets/images/covers/cover.png',
+    ),
+    Podcast(
+      title: 'The Joe Rogan Experience 2',
+      creator: 'Joe Rogan',
+      url: 'assets/audio/podcast.wav',
+      coverUrl: 'assets/images/covers/cover.png',
+    ),
+    Podcast(
+      title: 'The Joe Rogan Experience 2',
+      creator: 'Joe Rogan',
+      url: 'assets/audio/podcast.wav',
+      coverUrl: 'assets/images/covers/cover.png',
+    ),
+    Podcast(
+      title: 'The Joe Rogan Experience 2',
+      creator: 'Joe Rogan',
+      url: 'assets/audio/podcast.wav',
+      coverUrl: 'assets/images/covers/cover.png',
+    ),
+    Podcast(
+      title: 'The Joe Rogan Experience 2',
+      creator: 'Joe Rogan',
+      url: 'assets/audio/podcast.wav',
+      coverUrl: 'assets/images/covers/cover.png',
+    ),
+    Podcast(
+      title: 'The Joe Rogan Experience 2',
+      creator: 'Joe Rogan',
+      url: 'assets/audio/podcast.wav',
+      coverUrl: 'assets/images/covers/cover.png',
+    ),
+    Podcast(
+      title: 'The Joe Rogan Experience 2',
+      creator: 'Joe Rogan',
+      url: 'assets/audio/podcast.wav',
+      coverUrl: 'assets/images/covers/cover.png',
+    ),
   ];
 
   

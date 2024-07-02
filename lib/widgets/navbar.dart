@@ -12,6 +12,7 @@ class NavBar extends StatelessWidget {
       valueListenable: _selectedIndex,
       builder: (context, value, child) {
         return Scaffold(
+          resizeToAvoidBottomInset: false,
           body: pages[value],
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           floatingActionButton: FloatingActionButton(

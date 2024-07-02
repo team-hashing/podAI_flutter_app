@@ -3,9 +3,8 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart' as rxdart;
 
-import '../widgets/widgets.dart';
-import '../models/models.dart';
-
+import 'package:podai/models/models.dart';
+import 'package:podai/widgets/widgets.dart';
 
 class PodcastScreen extends StatefulWidget {
 

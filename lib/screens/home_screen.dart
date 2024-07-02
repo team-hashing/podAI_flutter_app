@@ -3,38 +3,49 @@ import 'package:get/get.dart';
 import 'package:podai/models/models.dart';
 import 'package:podai/widgets/widgets.dart';
 
-
-
-
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.menu),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {},
+        ),
+        backgroundColor: Colors.transparent,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.search),
             onPressed: () {},
           ),
-          backgroundColor: Colors.transparent,
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {},
+        ],
+      ),
+      body: 
+      SingleChildScrollView(
+        child: Column(
+          children: List.from(
+            [PodcastSection(	
+              podcasts: Podcast.podcasts,
+              displayType: DisplayType.grid,
+              gridCrossAxisCount: 2,
+              title: 'Recommended',
             ),
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: GridView.count(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 0.75,
-            children: Podcast.podcasts.map((podcast) => PodcastCard(podcast: podcast)).toList(),
+            PodcastSection(
+              podcasts: Podcast.podcasts,
+              displayType: DisplayType.list,
+              title: 'Trending',
+            ),
+            PodcastSection(
+              podcasts: Podcast.podcasts,
+              displayType: DisplayType.cards,
+              title: 'New Releases',
+            ),
+            ],
           ),
         ),
+      ),
     );
   }
 }

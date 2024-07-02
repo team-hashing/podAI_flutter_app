@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:podai/widgets/profile_header.dart';
-import '../models/podcast_model.dart'; // Assuming this is the path to your Podcast model
-import '../widgets/widgets.dart';
+import 'package:podai/models/models.dart';
+import 'package:podai/widgets/widgets.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
-    final String username = "YourUsername";
-    final String profileImageUrl = "assets/images/profile.png"; // Your profile image asset path
+    const String username = "YourUsername";
+    const String profileImageUrl = "assets/images/profile/profile.png";
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(username),
+        title: const Text(username),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               Get.toNamed('/settings');
             },
@@ -26,41 +25,23 @@ class ProfileScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          
-          ProfileHeader(username: username, profileImageUrl: profileImageUrl),
-          _buildSectionTitle('Keep Watching'),
-          _buildPodcastSection(Podcast.keepWatching),
-          _buildSectionTitle('Recommended for You'),
-          _buildPodcastSection(Podcast.podcasts), // Assuming Podcast.podcasts contains recommended podcasts
-          // Add more sections here
+          const ProfileHeader(username: username, profileImageUrl: profileImageUrl),
+          // Using the enhanced PodcastSection with a title
+          PodcastSection(
+            podcasts: Podcast.keepWatching,
+            title: 'Keep Watching',
+            titleStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+          // Using the enhanced PodcastSection in a grid layout
+          PodcastSection(
+            podcasts: Podcast.podcasts.take(4).toList(),
+            isGrid: true,
+            gridCrossAxisCount: 2,
+            title: 'Recommended',
+            titleStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
         ],
       ),
     );
   }
-
-  
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        title,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-  Widget _buildPodcastSection(List<Podcast> podcasts) {
-    return Container(
-      height: 200, // Adjust based on your layout
-      child: ListView(
-        shrinkWrap: true, // This tells the ListView to size itself based on the children's sizes
-        scrollDirection: Axis.horizontal,
-        children: podcasts.map((podcast) => 
-          SizedBox(
-            width: 150, // Specify your desired width here
-            child: PodcastCard(podcast: podcast),
-          )
-        ).toList(),
-      ),
-    );
-}
 }
