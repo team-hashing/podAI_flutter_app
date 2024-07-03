@@ -28,13 +28,13 @@ class _PodcastScreenState extends State<PodcastScreen> {
       ),
     );
     
-  audioPlayer.durationStream.listen((duration) {
-    if (duration != null) {
-      int initialPositionMilliseconds = (podcast.progress * duration.inMilliseconds).toInt();
-      Duration initialPosition = Duration(milliseconds: initialPositionMilliseconds);
-      audioPlayer.seek(initialPosition);
-    }
-  });
+    audioPlayer.durationStream.listen((duration) {
+      if (duration != null) {
+        int initialPositionMilliseconds = (podcast.progress * duration.inMilliseconds).toInt();
+        Duration initialPosition = Duration(milliseconds: initialPositionMilliseconds);
+        audioPlayer.seek(initialPosition);
+      }
+    });
   }
 
   @override

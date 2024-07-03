@@ -28,7 +28,7 @@ class _CreateScreenState extends State<CreateScreen> {
         ),
         body: TabBarView(
           children: [
-            CreateWidgetTextInputTab(textController: _textController),
+            CreateWidgetTextInputTab(),
             PlaceholderTab('Coming soon: Generate from URL'),
             PlaceholderTab('Coming soon: Choose a Category'),
             PlaceholderTab('Coming soon: Upload PDF'),

@@ -35,7 +35,8 @@ class ProfileScreen extends StatelessWidget {
           // Using the enhanced PodcastSection in a grid layout
           PodcastSection(
             podcasts: Podcast.podcasts.take(4).toList(),
-            isGrid: true,
+            displayType: DisplayType.grid,
+            height: 200,
             gridCrossAxisCount: 2,
             title: 'Recommended',
             titleStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),

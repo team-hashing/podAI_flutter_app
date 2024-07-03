@@ -5,12 +5,36 @@ import 'package:podai/models/models.dart';
 // New PodcastCard Widget
 class PodcastCard extends StatelessWidget {
   final Podcast podcast;
+  final double height; // Added height parameter
+  final double width; // Added width parameter
 
-  const PodcastCard({Key? key, required this.podcast}) : super(key: key);
+  const PodcastCard({
+    Key? key,
+    required this.podcast,
+    required this.height, // Initialize height
+    required this.width, // Initialize width
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    const double minWidthForRegularView = 120;
+    const double minHeightForRegularView = 180;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (width < minWidthForRegularView || height < minHeightForRegularView) {
+          return _buildCompactView(context, height, width);
+        } else {
+          return _buildRegularView(context, height, width);
+        }
+      },
+    );
+  }
+Widget _buildRegularView(BuildContext context, double height, double width) {
+  return Container(
+    height: height,
+    width: width,
+    child: Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -25,7 +49,10 @@ class PodcastCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Expanded(
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 180,
+                ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
                   child: Image.asset(
@@ -43,7 +70,7 @@ class PodcastCard extends StatelessWidget {
                 podcast.creator,
                 style: const TextStyle(color: Colors.grey),
               ),
-              if (podcast.progress > 0) // Check if progress is not 0
+              if (podcast.progress > 0)
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: LinearProgressIndicator(
@@ -54,8 +81,48 @@ class PodcastCard extends StatelessWidget {
                 ),
             ],
           ),
+          ),
         ),
-      ),
+    ),
+  );
+}
+
+  Widget _buildCompactView(BuildContext context, double height, double width) {
+    // Implement a more compact view suitable for smaller spaces
+    return Column(
+      children: [
+        Card(
+          elevation: 2,
+          child: InkWell(
+            onTap: () {
+              Get.toNamed('/podcast', arguments: podcast);
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: 
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 180,
+                  maxWidth: 120,
+                ),
+                child: Image.asset(
+                  podcast.coverUrl,
+                  fit: BoxFit.cover,
+                // You might want to specify a height here to ensure the image fits well in a compact view
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          child: Text(
+            podcast.title,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
     );
   }
 }
