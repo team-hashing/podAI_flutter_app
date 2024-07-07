@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:podai/models/models.dart';
 import 'package:podai/widgets/widgets.dart';
 
@@ -18,7 +17,7 @@ class ProfileScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              Get.toNamed('/settings');
+              Navigator.pushNamed(context, '/settings');
             },
           ),
         ],
@@ -26,13 +25,11 @@ class ProfileScreen extends StatelessWidget {
       body: ListView(
         children: [
           const ProfileHeader(username: username, profileImageUrl: profileImageUrl),
-          // Using the enhanced PodcastSection with a title
           PodcastSection(
             podcasts: Podcast.keepWatching,
             title: 'Keep Watching',
             titleStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
           ),
-          // Using the enhanced PodcastSection in a grid layout
           PodcastSection(
             podcasts: Podcast.podcasts.take(4).toList(),
             displayType: DisplayType.grid,

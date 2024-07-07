@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:podai/screens/screens.dart';
-import 'package:podai/services/services.dart'; // Update with your actual path
+import 'package:podai/services/services.dart'; 
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
+class RegisterScreen extends StatefulWidget {
   @override
-  // ignore: library_private_types_in_public_api
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final AuthService _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
 
@@ -22,63 +19,63 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: Text('Register'),
         centerTitle: true,
         actions: <Widget>[
           TextButton.icon(
-            icon: const Icon(Icons.person),
-            label: const Text('Register'),
+            icon: Icon(Icons.person),
+            label: Text('Login'),
             onPressed: () {
-              Navigator.pushNamed(context, '/register');
+              Navigator.pushNamed(context, '/login');
             },
           ),
         ],
       ),
       body: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: <Widget>[
-              const SizedBox(height: 20.0),
+              SizedBox(height: 20.0),
               TextFormField(
                 onChanged: (val) {
                   setState(() => email = val);
                 },
                 validator: (val) => val!.isEmpty ? 'Enter an email' : null,
-                decoration: const InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(labelText: 'Email'),
               ),
-              const SizedBox(height: 20.0),
+              SizedBox(height: 20.0),
               TextFormField(
                 obscureText: true,
                 onChanged: (val) {
                   setState(() => password = val);
                 },
                 validator: (val) => val!.length < 6 ? 'Enter a password 6+ chars long' : null,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(labelText: 'Password'),
               ),
-              const SizedBox(height: 20.0),
+              SizedBox(height: 20.0),
               ElevatedButton(
-                child: const Text('Login'),
+                child: Text('Register'),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    dynamic result = await _authService.signIn(email, password);
+                    dynamic result = await _authService.register(email, password);
                     if (result == null) {
-                      setState(() => error = 'Could not sign in with those credentials');
+                      setState(() => error = 'Please supply a valid email');
+                    } else {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                        (route) => false,
+                      );
                     }
-                    Navigator.pushAndRemoveUntil(
-                      // ignore: use_build_context_synchronously
-                      context,
-                      MaterialPageRoute(builder: (context) => const MyApp()),
-                      (route) => false,
-                    );
                   }
                 },
               ),
-              const SizedBox(height: 12.0),
+              SizedBox(height: 12.0),
               Text(
                 error,
-                style: const TextStyle(color: Colors.red, fontSize: 14.0),
+                style: TextStyle(color: Colors.red, fontSize: 14.0),
               ),
             ],
           ),

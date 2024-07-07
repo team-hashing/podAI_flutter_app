@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart' as rxdart;
 
@@ -16,26 +15,37 @@ class PodcastScreen extends StatefulWidget {
 
 class _PodcastScreenState extends State<PodcastScreen> {
   AudioPlayer audioPlayer = AudioPlayer();
-  
-  Podcast podcast = Get.arguments ?? Podcast.podcasts.first;
+  late Podcast podcast;
 
   @override
   void initState() {
     super.initState();
-    audioPlayer.setAudioSource(
-      AudioSource.uri(
-        Uri.parse('asset:///${podcast.url}'),
-      ),
-    );
-    
-    audioPlayer.durationStream.listen((duration) {
-      if (duration != null) {
-        int initialPositionMilliseconds = (podcast.progress * duration.inMilliseconds).toInt();
-        Duration initialPosition = Duration(milliseconds: initialPositionMilliseconds);
-        audioPlayer.seek(initialPosition);
-      }
+    audioPlayer = AudioPlayer();
+
+    // Delay the execution to ensure the context is available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Retrieve the podcast object passed as an argument
+      setState(() {
+        podcast = ModalRoute.of(context)?.settings.arguments as Podcast ?? Podcast.podcasts.first;
+      });
+
+      // Now you can use the podcast object
+      audioPlayer.setAudioSource(
+        AudioSource.uri(
+          Uri.parse('asset:///${podcast.url}'),
+        ),
+      );
+
+      audioPlayer.durationStream.listen((duration) {
+        if (duration != null) {
+          int initialPositionMilliseconds = (podcast.progress * duration.inMilliseconds).toInt();
+          Duration initialPosition = Duration(milliseconds: initialPositionMilliseconds);
+          audioPlayer.seek(initialPosition);
+        }
+      });
     });
   }
+
 
   @override
   void dispose() {
@@ -59,12 +69,11 @@ class _PodcastScreenState extends State<PodcastScreen> {
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
-          Get.back();
+          Navigator.pop(context);
           final currentPosition = audioPlayer.position;
           final totalDuration = audioPlayer.duration;
           final percentage = currentPosition.inMilliseconds / totalDuration!.inMilliseconds;
           podcast.progress = percentage;
-          // Do something with the podcast duration
         },
       ),
       backgroundColor: Colors.transparent,

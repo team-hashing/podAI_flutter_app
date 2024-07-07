@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart'; // Ensure you have this import for navigation
 import 'package:podai/models/models.dart';
 
 // New PodcastCard Widget
@@ -42,7 +41,7 @@ Widget _buildRegularView(BuildContext context, double height, double width) {
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
         onTap: () {
-          Get.toNamed('/podcast', arguments: podcast);
+          Navigator.pushNamed(context, '/podcast', arguments: podcast);
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -95,7 +94,7 @@ Widget _buildRegularView(BuildContext context, double height, double width) {
           elevation: 2,
           child: InkWell(
             onTap: () {
-              Get.toNamed('/podcast', arguments: podcast);
+              Navigator.pushNamed(context, '/podcast', arguments: podcast);
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),

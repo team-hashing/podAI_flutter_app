@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:podai/screens/register_screen.dart';
 import 'package:podai/screens/screens.dart';
 import 'package:podai/widgets/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,15 +9,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      // Other properties remain unchanged
+    return MaterialApp(
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
             User? user = snapshot.data;
             if (user == null) {
-              return LoginScreen(); // Or your login screen
+              return RegisterScreen(); // Or your login screen
             }
             return NavBar(pages: const [HomeScreen(), CreateScreen(), ProfileScreen()]);
           }
@@ -25,11 +24,12 @@ class MyApp extends StatelessWidget {
         },
       ),
       
-      getPages: [
-        GetPage(name: '/', page: () => const HomeScreen()),
-        GetPage(name: '/podcast', page: () => const PodcastScreen()),
-        //GetPage(name: '/settings', page: ()) => const SettingsScreen()),
-      ],
+      routes: {
+        '/login': (context) => LoginScreen(),
+        '/register': (context) => RegisterScreen(),
+        '/podcast': (context) => const PodcastScreen(),
+        '/settings': (context) => const SettingsScreen(),
+      },
     );
   }
 }

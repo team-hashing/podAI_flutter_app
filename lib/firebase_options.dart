@@ -63,6 +63,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '197233010794',
     projectId: 'podai-425012',
     storageBucket: 'podai-425012.appspot.com',
-    iosBundleId: 'com.example.podai',
+    iosBundleId: 'com.hashing.podai',
   );
 }

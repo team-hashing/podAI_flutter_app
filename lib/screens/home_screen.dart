@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:podai/models/models.dart';
 import 'package:podai/widgets/widgets.dart';
 
@@ -18,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void startSearch() {
     setState(() {
       isSearching = true;
+      searchResults.addAll(Podcast.podcasts);
     });
   }
 
@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void searchPodcasts(String query) {
     if (query.isEmpty) {
       setState(() {
-        searchResults.clear();
+        searchResults.addAll(Podcast.podcasts);
       });
       return;
     }
@@ -56,10 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(Icons.arrow_back),
                 onPressed: cancelSearch,
               )
-            : IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () {},
-              ),
+            : null,
         backgroundColor: Colors.transparent,
         title: isSearching
             ? TextField(
