@@ -1,4 +1,4 @@
-# podai
+# podAI
 
 podai is the frontend for a cutting-edge podcast generator powered by AI. This Flutter project serves as the interface for an innovative application that allows users to generate AI-driven podcasts on any subject of their choice. By leveraging advanced AI algorithms, podai transforms your ideas into engaging podcast episodes, making content creation accessible and effortless.
 

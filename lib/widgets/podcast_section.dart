@@ -53,13 +53,13 @@ class PodcastSection extends StatelessWidget {
           children: podcasts.map((podcast) => SizedBox(
             width: itemWidth,
             height: height,
-            child: PodcastCard(podcast: podcast, height: height, width: itemWidth),
+            child: PodcastCard(key: Key(podcast.uuid), podcast: podcast, height: height, width: itemWidth),
           )).toList(),
         );
         break;
       case DisplayType.list:
         content = Column(
-          children: podcasts.map((podcast) => HorizontalPodcastCard(podcast: podcast)).toList(),
+          children: podcasts.map((podcast) => HorizontalPodcastCard(key: Key(podcast.uuid), podcast: podcast)).toList(),
         );
         break;
       case DisplayType.cards:
@@ -71,7 +71,7 @@ class PodcastSection extends StatelessWidget {
                   padding: padding,
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
-                  children: podcasts.map((podcast) => PodcastCard(podcast: podcast, height: height, width: itemWidth),
+                  children: podcasts.map((podcast) => PodcastCard(key: Key(podcast.uuid), podcast: podcast, height: height, width: itemWidth),
                   ).toList(),
                 ),
               );

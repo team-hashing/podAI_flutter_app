@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:podai/models/models.dart';
+import 'package:podai/services/services.dart';
 import 'package:podai/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,6 +11,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  List<Podcast> podcasts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadPodcasts();
+  }
+
+  void loadPodcasts() async {
+    List<Podcast> podcasts = await DatabaseService.instance.fetchAllPodcasts();
+    setState(() {});
+  }
+
+
   bool isSearching = false;
   List<Podcast> searchResults = [];
   TextEditingController searchController = TextEditingController();
@@ -17,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void startSearch() {
     setState(() {
       isSearching = true;
-      searchResults.addAll(Podcast.podcasts);
+      searchResults.addAll(DatabaseService.instance.fetchAllPodcasts() as Iterable<Podcast>);
     });
   }
 
@@ -32,11 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void searchPodcasts(String query) {
     if (query.isEmpty) {
       setState(() {
-        searchResults.addAll(Podcast.podcasts);
+        searchResults.addAll(podcasts);
       });
       return;
     }
-    final results = Podcast.podcasts.where((podcast) {
+    final results = podcasts.where((podcast) {
       final titleLower = podcast.title.toLowerCase();
       final searchLower = query.toLowerCase();
       return titleLower.contains(searchLower);
@@ -49,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AudioService audioService = AudioService.instance;
     return Scaffold(
       appBar: AppBar(
         leading: isSearching
@@ -62,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ? TextField(
                 controller: searchController,
                 autofocus: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search Podcasts...',
                   border: InputBorder.none,
                 ),
@@ -78,35 +95,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
       ),
-      body: isSearching
+      body: Stack(
+        children: [
+          isSearching
           ? ListView.builder(
               itemCount: searchResults.length,
               itemBuilder: (context, index) {
                 final podcast = searchResults[index];
                 return HorizontalPodcastCard(podcast: podcast);
               },
-            ) : SingleChildScrollView(
-        child: Column(
-          children: List.from(
-            [PodcastSection(	
-              podcasts: Podcast.keepWatching,
-              displayType: DisplayType.grid,
-              gridCrossAxisCount: 3,
-              title: 'Recommended',
+            ) : 
+          SingleChildScrollView(
+            
+            padding: EdgeInsets.only(bottom: audioService.getCurrentPodcast() != null ? 200:0),
+            child: Column(
+              children: [
+                PodcastSection(
+                  key: const Key('recommended_section'),
+                  podcasts: Podcast.podcastMocks,
+                  displayType: DisplayType.grid,
+                  gridCrossAxisCount: 3,
+                  title: 'Recommended',
+                ),
+                PodcastSection(
+                  key: const Key('trending_section'),
+                  podcasts: Podcast.podcastMocks,
+                  displayType: DisplayType.list,
+                  title: 'Trending',
+                ),
+                PodcastSection(
+                  key: const Key('new_releases_section'),
+                  podcasts: Podcast.podcastMocks,
+                  displayType: DisplayType.cards,
+                  title: 'New Releases',
+                ),
+              ],
             ),
-            PodcastSection(
-              podcasts: Podcast.keepWatching,
-              displayType: DisplayType.list,
-              title: 'Trending',
-            ),
-            PodcastSection(
-              podcasts: Podcast.keepWatching,
-              displayType: DisplayType.cards,
-              title: 'New Releases',
-            ),
-            ],
           ),
-        ),
+          
+        ],
       ),
     );
   }

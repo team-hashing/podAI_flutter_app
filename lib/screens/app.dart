@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.active) {
             User? user = snapshot.data;
             if (user == null) {
-              return RegisterScreen(); // Or your login screen
+              return RegisterScreen();
             }
             return NavBar(pages: const [HomeScreen(), CreateScreen(), ProfileScreen()]);
           }
@@ -32,4 +32,6 @@ class MyApp extends StatelessWidget {
       },
     );
   }
+
 }
+

@@ -24,20 +24,6 @@ class ProfileScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          const ProfileHeader(username: username, profileImageUrl: profileImageUrl),
-          PodcastSection(
-            podcasts: Podcast.keepWatching,
-            title: 'Keep Watching',
-            titleStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
-          ),
-          PodcastSection(
-            podcasts: Podcast.podcasts.take(4).toList(),
-            displayType: DisplayType.grid,
-            height: 200,
-            gridCrossAxisCount: 2,
-            title: 'Recommended',
-            titleStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
-          ),
         ],
       ),
     );

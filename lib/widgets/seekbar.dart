@@ -1,26 +1,23 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
-class SeekBarData {
-  final Duration position;
-  final Duration duration;
-
-  SeekBarData(this.position, this.duration);
-}
+import 'package:podai/services/services.dart';
 
 class SeekBar extends StatefulWidget {
   final Duration position;
   final Duration duration;
   final ValueChanged<Duration>? onChanged;
   final ValueChanged<Duration>? onChangeEnd;
+  final bool showTime;
 
   const SeekBar(
       {super.key,
       required this.position,
       required this.duration,
       this.onChanged,
-      this.onChangeEnd});
+      this.onChangeEnd,
+      this.showTime = true
+      });
 
   @override
   State<SeekBar> createState() => _SeekBarState();
@@ -44,7 +41,7 @@ class _SeekBarState extends State<SeekBar> {
       color: Colors.transparent,
       child: Row(
         children: [
-          Text(_formatDuration(widget.position)),
+          if (widget.showTime) Text(_formatDuration(widget.position)),
           Expanded(
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
@@ -91,7 +88,7 @@ class _SeekBarState extends State<SeekBar> {
             ),
           ),
         
-          Text(_formatDuration(widget.duration)),
+          if (widget.showTime) Text(_formatDuration(widget.duration)),
       ],
       ),
     );

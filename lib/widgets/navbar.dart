@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:podai/widgets/widgets.dart';
 
 class NavBar extends StatelessWidget {
   final List<Widget> pages;
@@ -12,8 +13,18 @@ class NavBar extends StatelessWidget {
       valueListenable: _selectedIndex,
       builder: (context, value, child) {
         return Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: pages[value],
+          extendBodyBehindAppBar: true,
+          body: Stack( 
+            children: [
+              pages[value],
+              Positioned(
+              child: Container(
+                alignment: Alignment.bottomCenter,
+                child: const BottomPlayer(),
+              ),
+              ),  
+            ],
+          ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -28,7 +39,7 @@ class NavBar extends StatelessWidget {
           ),
           bottomNavigationBar: BottomAppBar(
             shape: const CircularNotchedRectangle(),
-            notchMargin: 5.0,
+            notchMargin: 10.0,
             child: SizedBox(
               height: 60,
               child: Row(
