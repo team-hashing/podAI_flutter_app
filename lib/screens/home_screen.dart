@@ -26,16 +26,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
-  bool isSearching = false;
-  List<Podcast> searchResults = [];
-  TextEditingController searchController = TextEditingController();
+bool isSearching = false;
+List<Podcast> searchResults = [];
+TextEditingController searchController = TextEditingController();
 
-  void startSearch() {
-    setState(() {
-      isSearching = true;
-      searchResults.addAll(DatabaseService.instance.fetchAllPodcasts() as Iterable<Podcast>);
-    });
-  }
+
+void startSearch() async {
+  List<Podcast> podcasts = await DatabaseService.instance.fetchAllPodcasts();
+  setState(() {
+    isSearching = true;
+    searchResults.addAll(podcasts);
+  });
+}
 
   void cancelSearch() {
     setState(() {
@@ -53,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
     final results = podcasts.where((podcast) {
-      final titleLower = podcast.title.toLowerCase();
+      final titleLower = podcast.name.toLowerCase();
       final searchLower = query.toLowerCase();
       return titleLower.contains(searchLower);
     }).toList();
@@ -112,22 +114,20 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 PodcastSection(
                   key: const Key('recommended_section'),
-                  podcasts: Podcast.podcastMocks,
                   displayType: DisplayType.grid,
                   gridCrossAxisCount: 3,
                   title: 'Recommended',
                 ),
                 PodcastSection(
                   key: const Key('trending_section'),
-                  podcasts: Podcast.podcastMocks,
                   displayType: DisplayType.list,
                   title: 'Trending',
                 ),
                 PodcastSection(
                   key: const Key('new_releases_section'),
-                  podcasts: Podcast.podcastMocks,
                   displayType: DisplayType.cards,
                   title: 'New Releases',
+                  podcastType: PodcastType.user,
                 ),
               ],
             ),

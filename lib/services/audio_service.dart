@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:podai/services/services.dart';
 import 'package:rxdart/rxdart.dart';
@@ -19,29 +19,36 @@ class AudioService {
   AudioService._internal();
 
   AudioPlayer get audioPlayer => _audioPlayer;
-  StreamSubscription<Duration>? _positionSubscription; // Add this line
+  StreamSubscription<Duration>? _positionSubscription;
   Stream<Podcast?> get currentPodcastStream => _currentPodcastSubject.stream;
   Stream<bool> get isPlayingStream => _audioPlayer.playingStream;
-  Podcast? get _currentPodcast => _currentPodcastSubject.valueOrNull;  set _currentPodcast(Podcast? podcast) => _currentPodcastSubject.add(podcast);
+  Podcast? get _currentPodcast => _currentPodcastSubject.valueOrNull;  
+  set _currentPodcast(Podcast? podcast) => _currentPodcastSubject.add(podcast);
 
-  Future<void> setCurrentPodcast(Podcast podcast) async {
-    
+  Future<void> initialize(List<Podcast> podcasts) async {
+    await loadAllPodcastProgress(podcasts);
+  }
+Future<void> setCurrentPodcast(Podcast podcast) async {
+  try {
     stopPositionListener();
     _currentPodcast = podcast;
 
+    String audioUrl = await StoreService.instance.accessFile(podcast.uuid, Types.audio);
+    print('Setting audio URL: $audioUrl');
+    print('Initial position: ${podcast.progress} ms');
     
-    String audioUrl = await StoreService.instance.accessFile(podcast.uuid, Types.audio); 
-
-    audioPlayer.setUrl(
-      audioUrl
-    ).then((_) {
+    await audioPlayer.setUrl(audioUrl).then((_) async {
       // After setting the audio source, seek to the last known position
       Duration initialPosition = Duration(milliseconds: podcast.progress);
-      audioPlayer.seek(initialPosition).then(
+      await audioPlayer.seek(initialPosition).then(
         (_) => _setupPositionListener(),
       );
     });
+  } catch (e) {
+    print('Error setting current podcast: $e');
+    // Handle the error appropriately, e.g., show a message to the user
   }
+}
 
 
   Stream<SeekBarData> get seekBarDataStream => Rx.combineLatest2<Duration, Duration?, SeekBarData>(
@@ -65,16 +72,30 @@ class AudioService {
   
   void stopPositionListener() {
     updatePodcastProgress();
-    _positionSubscription?.cancel(); // Add this method
+    _positionSubscription?.cancel();
     _positionSubscription = null;
     _currentPodcast = null;
   }
 
-  void updatePodcastProgress() {
-    if (_currentPodcast != null) {
-      _currentPodcast!.progress = currentProgress;
-    }
+void updatePodcastProgress() async {
+  if (_currentPodcast != null) {
+    _currentPodcast!.progress = currentProgress;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('progress_${_currentPodcast!.uuid}', currentProgress);
   }
+}
+
+Future<void> loadPodcastProgress(Podcast podcast) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  podcast.progress = prefs.getInt('progress_${podcast.uuid}') ?? 0;
+}
+
+Future<void> loadAllPodcastProgress(List<Podcast> podcasts) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  for (Podcast podcast in podcasts) {
+    podcast.progress = prefs.getInt('progress_${podcast.uuid}') ?? 0;
+  }
+}
 
   void play() {
     _audioPlayer.play();

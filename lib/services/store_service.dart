@@ -15,8 +15,8 @@ class StoreService {
   Future<String> accessFile(String id, Types type) async {
     // Create a reference to the file
     FirebaseStorage storage = FirebaseStorage.instance;
-    String filePath = id + (type == Types.audio ? '/audio.wav' : '/cover.png');
-    Reference ref = storage.refFromURL('gs://podai-425012.appspot.com/$filePath');
+    String filePath = id + (type == Types.audio ? '/audio.wav' : '/image.png');
+    Reference ref = storage.refFromURL('gs://podai-425012.appspot.com/podcasts/$filePath');
 
     // To get a URL to the file
     try {

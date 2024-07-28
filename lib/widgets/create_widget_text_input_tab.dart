@@ -8,7 +8,8 @@ class CreateWidgetTextInputTab extends StatefulWidget {
 
 class _CreateWidgetTextInputTabState extends State<CreateWidgetTextInputTab> {
   bool isLoading = false;
-  final textController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -19,71 +20,46 @@ class _CreateWidgetTextInputTabState extends State<CreateWidgetTextInputTab> {
       },
       child: Center(
         child: Container(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min, // To make the card wrap content
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Enter Podcast Topic',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _subjectController,
+                decoration: InputDecoration(
+                  labelText: 'Subject',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: textController,
-                  maxLines: null,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    hintText: 'Start typing...',
-                    hintStyle: const TextStyle(color: Colors.white70),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 46, 24, 56),
-                  ),
+                maxLines: 1,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    setState(() => isLoading = true);
-                    await Future.delayed(const Duration(seconds: 2));
-                    setState(() => isLoading = false);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 151, 82, 184),
-                    shadowColor: Colors.deepPurpleAccent,
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18.0),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
-                  ),
-                  child: const Text('Generate Podcast', style: TextStyle(fontSize: 18, color: Colors.white)),
-                ),
-                if (isLoading)
-                  Container(
-                    margin: const EdgeInsets.only(top: 20),
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        LinearProgressIndicator(),
-                        SizedBox(height: 10),
-                        Text('Generating Podcast...', style: TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
+                maxLines: 1,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  CreatePodcastService().generatePodcast(_subjectController.text, _nameController.text).then((_) {
+                    setState(() {
+                      isLoading = false;
+                    });
+                  });
+                },
+                child: Text('Submit'),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
-}
-
-extension on Widget {
-  Widget center() => Center(child: this);
 }

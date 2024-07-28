@@ -12,7 +12,7 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(username),
+        title: const Text('Profile'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -24,6 +24,7 @@ class ProfileScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
+          ProfileHeader(username: username, profileImageUrl: profileImageUrl)
         ],
       ),
     );

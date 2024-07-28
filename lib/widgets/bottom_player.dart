@@ -52,7 +52,7 @@ class _BottomPlayerState extends State<BottomPlayer> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               Text(
-                                snapshot.data!.title,
+                                snapshot.data!.name,
                                 style: TextStyle(color: Colors.white),
                               ),
                               IconButton(

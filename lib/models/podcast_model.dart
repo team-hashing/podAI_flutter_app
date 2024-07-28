@@ -1,32 +1,44 @@
 class Podcast {
   final String uuid;
-  final String title;
+  final String name;
   final String creator;
-  final int duration;
-  late final int progress;
+  int _progress;
   DateTime createdAt;
   int likes;
   List<String> likedBy;
 
   Podcast({
     required this.uuid,
-    required this.title,
+    required this.name,
     required this.creator,
-    required this.progress,
-    required this.duration,
+    required int progress, // Use a parameter for progress
     required this.createdAt,
     required this.likes,
     required this.likedBy,
-  });
+  }) : _progress = progress; // Initialize the private field
+
+  // Getter for progress
+  int get progress => _progress;
+
+  // Setter for progress
+  set progress(int value) {
+    _progress = value;
+  }
+
+  // Calculate progress percentage
+  double getProgressPercentage(Duration duration) {
+    if (duration.inMilliseconds == 0) return 0;
+    return (_progress / duration.inMilliseconds) * 100;
+  }
 
   // Convert a Podcast object into a map
   Map<String, dynamic> toMap() {
     return {
-      'title': title,
+      'uuid': uuid,
+      'title': name,
       'creator': creator,
-      'progress': progress,
-      'duration': duration,
-      'createdAt': createdAt.millisecondsSinceEpoch,
+      'progress': _progress,
+      'createdAt': createdAt.toIso8601String(),
       'likes': likes,
       'likedBy': likedBy,
     };
@@ -36,13 +48,12 @@ class Podcast {
   factory Podcast.fromMap(Map<String, dynamic> map, String uuid) {
     return Podcast(
       uuid: uuid,
-      title: map['title'],
-      creator: map['creator'],
-      progress: map['progress'],
-      duration: map['duration'],
-      createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
-      likes: map['likes'],
-      likedBy: List<String>.from(map['likedBy']),
+      name: map['name'],
+      creator: map['user_id'],
+      progress: 0,
+      createdAt: DateTime.now(), //mocked
+      likes: 10, //map['likes'],
+      likedBy: [],//List<String>.from(map['liked_by']),
     );
   }
 
@@ -50,60 +61,54 @@ class Podcast {
   static List<Podcast> podcastMocks = [
     Podcast(
       uuid: 'BkofQvdg2EdktqL1tYfu',
-      title: 'The first podcast',
+      name: 'The first podcast',
       creator: 'John Doe',
       progress: 0,
-      duration: 1000,
       createdAt: DateTime.now(),
       likes: 0,
       likedBy: [],
     ),
     Podcast(
-      uuid: '2',
-      title: 'The second podcast',
+      uuid: 'b710ea43-49d9-4142-9d75-a6ef6120f336',
+      name: 'The second podcast',
       creator: 'Jane Doe',
       progress: 0,
-      duration: 1000,
       createdAt: DateTime.now(),
       likes: 0,
       likedBy: [],
     ),
     Podcast(
       uuid: '3',
-      title: 'The third podcast',
+      name: 'The third podcast',
       creator: 'John Doe',
       progress: 0,
-      duration: 1000,
       createdAt: DateTime.now(),
       likes: 0,
       likedBy: [],
     ),
     Podcast(
       uuid: '4',
-      title: 'The fourth podcast',
+      name: 'The fourth podcast',
       creator: 'Jane Doe',
       progress: 0,
-      duration: 1000,
       createdAt: DateTime.now(),
       likes: 0,
       likedBy: [],
     ),
     Podcast(
       uuid: '5',
-      title: 'The fifth podcast',
+      name: 'The fifth podcast',
       creator: 'John Doe',
       progress: 0,
-      duration: 1000,
       createdAt: DateTime.now(),
       likes: 0,
       likedBy: [],
     ),
     Podcast(
       uuid: '6',
-      title: 'The sixth podcast',
+      name: 'The sixth podcast',
       creator: 'Jane Doe',
       progress: 0,
-      duration: 1000,
       createdAt: DateTime.now(),
       likes: 0,
       likedBy: [],

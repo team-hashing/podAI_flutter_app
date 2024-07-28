@@ -35,6 +35,11 @@ class AuthService {
     await _auth.signOut();
   }
 
+  // Get the current user
+  User? getCurrentUser() {
+    return _auth.currentUser;
+  }
+
   /*
   Future<User?> signInWithGoogle() async {
     try {
