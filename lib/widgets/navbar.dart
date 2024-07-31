@@ -20,7 +20,8 @@ class NavBar extends StatelessWidget {
               Positioned(
               child: Container(
                 alignment: Alignment.bottomCenter,
-                child: const BottomPlayer(),
+                margin: const EdgeInsets.only(bottom: 10),
+                child: BottomPlayer(),
               ),
               ),  
             ],
@@ -38,6 +39,7 @@ class NavBar extends StatelessWidget {
             child: const Icon(Icons.add),
           ),
           bottomNavigationBar: BottomAppBar(
+            color: Color.fromARGB(255, 29, 16, 59),
             shape: const CircularNotchedRectangle(),
             notchMargin: 10.0,
             child: SizedBox(
@@ -46,6 +48,7 @@ class NavBar extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: IconButton(
+                      color: Colors.white,
                       iconSize: 30.0,
                       icon: const Icon(Icons.home),
                       onPressed: () {
@@ -58,6 +61,7 @@ class NavBar extends StatelessWidget {
                   ),
                   Expanded(
                     child: IconButton(
+                      color: Colors.white,
                       iconSize: 30.0,
                       icon: const Icon(Icons.person),
                       onPressed: () {

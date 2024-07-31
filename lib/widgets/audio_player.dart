@@ -1,11 +1,10 @@
+import 'dart:convert';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:podai/models/models.dart';
 import 'package:podai/services/services.dart';
 import 'package:podai/widgets/player_buttons.dart';
 import 'package:podai/widgets/seekbar.dart';
-import 'package:share/share.dart';
-import 'package:flutter/material.dart';
-import 'package:share/share.dart';
 
 class AudioPlayerWidget extends StatefulWidget {
   const AudioPlayerWidget({super.key});
@@ -23,116 +22,118 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     AudioService audioService = AudioService.instance;
 
     return Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: FutureBuilder<String>(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: FutureBuilder<String>(
               future: StoreService.instance.accessFile(
                   audioService.getCurrentPodcast()!.uuid, Types.cover),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   String coverUrl = snapshot.data!;
-                    return Container(
+                  return Container(
                     height: screenWidth * 0.9,
                     width: screenWidth * 0.9,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20.0),
                       image: DecorationImage(
-                      image: NetworkImage(coverUrl),
-                      fit: BoxFit.cover,
+                        image: CachedNetworkImageProvider(coverUrl),
+                        fit: BoxFit.cover,
                       ),
                       boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: const Offset(0, 3),
-                      ),
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 10.0,
+                          offset: Offset(0, 10),
+                        ),
                       ],
                     ),
-                    
+                    child: CachedNetworkImage(
+                      imageUrl: coverUrl,
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey[300],
+                        width: screenWidth * 0.9,
+                        height: screenWidth * 0.9,
+                      ),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
                   );
                 } else {
                   return Container(
                     width: screenWidth * 0.8,
                     height: screenWidth * 0.8,
-                    color: Colors.grey,
+                    color: Colors.grey[300],
                   );
                 }
               },
             ),
-                ),
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          const Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            audioService.getCurrentPodcast()!.name,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                            overflow:
-                                TextOverflow.ellipsis, // Prevents text overflow
+                    Text(
+                      audioService.getCurrentPodcast()!.name,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
-                          const SizedBox(height: 10.0),
-                          Text(
-                            audioService.getCurrentPodcast()!.creator,
-                            style: Theme.of(context).textTheme.titleSmall,
+                      overflow: TextOverflow.ellipsis, // Prevents text overflow
+                    ),
+                    const SizedBox(height: 10.0),
+                    Text(
+                      audioService.getCurrentPodcast()!.creator,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: Colors.white,
                           ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                          isFavorite ? Icons.favorite : Icons.favorite_border),
-                      color: Colors.red, // Optional: Customize color
-                      onPressed: () {
-                        setState(() {
-                          isFavorite =
-                              !isFavorite; // Step 3: Toggle favorite state
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.share),
-                      onPressed: () {
-                        setState(() {
-                          //TODO: create an URL for each podcast on frontend
-                          //Share.share(audioService.getCurrentPodcast()?.url ?? '');
-                        });
-                      },
                     ),
                   ],
                 ),
-                const SizedBox(height: 20.0),
-                StreamBuilder<SeekBarData>(
-                    stream: audioService.seekBarDataStream,
-                    builder: (context, snapshot) {
-                      final positionData = snapshot.data;
-                      return SeekBar(
-                        position: positionData?.position ?? Duration.zero,
-                        duration: positionData?.duration ?? Duration.zero,
-                        onChangeEnd: audioService.seek,
-                      );
-                    }),
-                const SizedBox(height: 20.0),
-                const PlayerButtons(),
-                const SizedBox(height: 20.0),
-              ],
-            ),
-          );
+              ),
+              IconButton(
+                icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+                color: Colors.red, // Optional: Customize color
+                onPressed: () {
+                  setState(() {
+                    isFavorite = !isFavorite; // Step 3: Toggle favorite state
+                  });
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.share),
+                color: Colors.white, // Optional: Customize color
+                onPressed: () {
+                  setState(() {
+                    //TODO: create an URL for each podcast on frontend
+                    //Share.share(audioService.getCurrentPodcast()?.url ?? '');
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 20.0),
+          StreamBuilder<SeekBarData>(
+              stream: audioService.seekBarDataStream,
+              builder: (context, snapshot) {
+                final positionData = snapshot.data;
+                return SeekBar(
+                  position: positionData?.position ?? Duration.zero,
+                  duration: positionData?.duration ?? Duration.zero,
+                  onChangeEnd: audioService.seek,
+                );
+              }),
+          const SizedBox(height: 20.0),
+          PlayerButtons(),
+          const SizedBox(height: 20.0),
+        ],
+      ),
+    );
   }
 }
-
-

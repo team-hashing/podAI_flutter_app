@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   //final GoogleSignIn googleSignIn = GoogleSignIn();
 
   // Sign in with email and password
@@ -15,10 +18,13 @@ class AuthService {
     }
   }
 
-  // Register with email and password
-  Future<User?> register(String email, String password) async {
+  // Register with email and password and username
+  Future<User?> register(String email, String password, String username) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      await result.user!.updateDisplayName(username);
+      await result.user!.updatePhotoURL("https://st3.depositphotos.com/9998432/13335/v/450/depositphotos_133351928-stock-illustration-default-placeholder-man-and-woman.jpg");
+      await _firestore.collection('users').doc(result.user!.uid).set({'username': username});
       return result.user;
     } catch (error) {
       return null;
@@ -39,6 +45,7 @@ class AuthService {
   User? getCurrentUser() {
     return _auth.currentUser;
   }
+
 
   /*
   Future<User?> signInWithGoogle() async {

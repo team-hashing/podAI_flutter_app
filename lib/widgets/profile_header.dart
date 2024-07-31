@@ -1,5 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:podai/models/models.dart';
 
 
 
@@ -8,10 +8,10 @@ class ProfileHeader extends StatelessWidget {
   final String profileImageUrl;
 
   const ProfileHeader({
-    Key? key,
+    super.key,
     required this.username,
     required this.profileImageUrl,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +21,16 @@ class ProfileHeader extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: CircleAvatar(
             radius: 50,
-            backgroundImage: AssetImage(profileImageUrl),
+            backgroundImage: CachedNetworkImageProvider(profileImageUrl),
           ),
         ),
         Text(
           username,
-          style: Theme.of(context).textTheme.headlineMedium,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 20),
       ],

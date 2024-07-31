@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:podai/services/services.dart';
 import 'package:podai/models/models.dart';
@@ -8,11 +10,11 @@ class PodcastCard extends StatelessWidget {
   final double width;
 
   const PodcastCard({
-    Key? key,
+    super.key,
     required this.podcast,
     this.height = 200,
     this.width = 150,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -45,44 +47,45 @@ class PodcastCard extends StatelessWidget {
   }
 
   Widget _buildPlaceholder() {
-  return Card(
-    elevation: 4,
-    child: Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // Align elements to the start
-        children: [
-          Container(
-            width: double.infinity,
-            height: 50,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.grey[300],
+    return Card(
+      elevation: 4,
+      color: Color(0xFF2E1760), // Darker gray for dark mode
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              height: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.grey[700], // Darker gray for dark mode
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            width: 100,
-            height: 20,
-            color: Colors.grey[300],
-          ),
-          const SizedBox(height: 4),
-          Container(
-            width: 60,
-            height: 20,
-            color: Colors.grey[300],
-          ),
-        ],
+            const SizedBox(height: 8),
+            Container(
+              width: 100,
+              height: 20,
+              color: Colors.grey[700], // Darker gray for dark mode
+            ),
+            const SizedBox(height: 4),
+            Container(
+              width: 60,
+              height: 20,
+              color: Colors.grey[700], // Darker gray for dark mode
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildErrorPlaceholder() {
     return Container(
       width: width,
       height: height,
-      color: Colors.red[300],
+      color: Colors.red[900], // Darker red for dark mode
       child: const Center(
         child: Icon(Icons.error, color: Colors.white),
       ),
@@ -102,33 +105,42 @@ class PodcastCard extends StatelessWidget {
             progressStop = (seekBarData!.position.inMilliseconds /
                 seekBarData.duration.inMilliseconds);
           }
+
           return Container(
             margin: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               gradient: LinearGradient(
                 colors: [
-                  const Color.fromARGB(255, 162, 35, 197)
-                      .withOpacity(isCurrentPodcastPlaying ? 1 : 1),
-                  const Color.fromARGB(255, 250, 232, 255),
+                  const Color.fromARGB(255, 138, 84, 161)
+                      .withOpacity(isCurrentPodcastPlaying ? 1 : 0),
+                  const Color.fromARGB(255, 30, 30, 30).withOpacity(isCurrentPodcastPlaying ? 1 : 0),
                 ],
                 stops: [progressStop, progressStop],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5), // Darker shadow color
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(2, 2), // Shadow position
+                  ),
+                ],
             ),
             child: Card(
-              color: isCurrentPodcastPlaying ? Colors.purple[200] : null,
+              color: isCurrentPodcastPlaying ? Color.fromARGB(255, 69, 29, 97) : Color.fromARGB(255, 42, 19, 60), // Darker gray for dark mode
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
-              elevation: 4,
+              elevation: 10,
               child: InkWell(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(20),
                 onTap: () {
                   audioService.setCurrentPodcast(podcast).then((_) {
-                                      audioService.loadPodcastProgress(podcast);
-                                    });
+                    audioService.loadPodcastProgress(podcast);
+                  });
                   Navigator.pushNamed(context, '/podcast');
                 },
                 child: Padding(
@@ -138,43 +150,39 @@ class PodcastCard extends StatelessWidget {
                     children: <Widget>[
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxHeight: 50,
+                          maxHeight: 100,
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.network(
-                            width: double.infinity,
-                            coverUrl,
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: CachedNetworkImage(
+                            imageUrl: coverUrl,
+                            width: 100,
+                            height: 100,
                             fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              } else {
-                                return SizedBox(
-                                  width: double.infinity,
-                                  child: Container(
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      color: Colors.grey[300],
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey[700], // Darker gray for dark mode
+                              width: 100,
+                              height: 100,
+                            ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
                           ),
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         podcast.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         podcast.creator,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: isCurrentPodcastPlaying
                             ? const TextStyle(
-                                color: Color.fromARGB(255, 68, 68, 68))
+                                color: Color.fromARGB(255, 200, 200, 200))
                             : const TextStyle(color: Colors.grey),
                       ),
                     ],

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:podai/widgets/widgets.dart';
 import 'package:podai/models/models.dart';
@@ -22,7 +21,7 @@ class PodcastSection extends StatefulWidget {
   final PodcastType podcastType;
 
   const PodcastSection({
-    Key? key,
+    super.key,
     this.itemWidth = 150,
     this.gridCrossAxisCount = 2,
     this.gridChildAspectRatio = .8,
@@ -31,10 +30,10 @@ class PodcastSection extends StatefulWidget {
     this.title,
     this.titleStyle,
     this.padding = const EdgeInsets.all(10),
-    this.height = 200,
+    this.height = 250,
     this.displayType = DisplayType.cards,
     this.podcastType = PodcastType.popular,
-  }) : super(key: key);
+  });
 
   @override
   _PodcastSectionState createState() => _PodcastSectionState();
@@ -64,52 +63,75 @@ class _PodcastSectionState extends State<PodcastSection> {
 
   @override
   Widget build(BuildContext context) {
-
     Widget content;
 
     switch (widget.displayType) {
       case DisplayType.grid:
         double screenWidth = MediaQuery.of(context).size.width;
         double itemWidth = (screenWidth - (widget.crossAxisSpacing * (widget.gridCrossAxisCount - 1))) / widget.gridCrossAxisCount;
-        content = GridView.count(
-          crossAxisCount: widget.gridCrossAxisCount,
-          childAspectRatio: widget.gridChildAspectRatio,
-          crossAxisSpacing: widget.crossAxisSpacing,
-          mainAxisSpacing: widget.mainAxisSpacing,
+        content = GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: widget.gridCrossAxisCount,
+            childAspectRatio: widget.gridChildAspectRatio,
+            crossAxisSpacing: widget.crossAxisSpacing,
+            mainAxisSpacing: widget.mainAxisSpacing,
+          ),
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          children: podcasts.map((podcast) => SizedBox(
-            width: itemWidth,
-            height: widget.height,
-            child: PodcastCard(key: Key(podcast.uuid), podcast: podcast, height: widget.height, width: itemWidth),
-          )).toList(),
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: podcasts.length,
+          itemBuilder: (context, index) {
+            final podcast = podcasts[index];
+            return SizedBox(
+              width: itemWidth,
+              height: widget.height,
+              child: PodcastCard(
+                key: Key(podcast.uuid),
+                podcast: podcast,
+              ),
+            );
+          },
         );
         break;
       case DisplayType.list:
-        content = Column(
-          children: podcasts.map((podcast) => HorizontalPodcastCard(key: Key(podcast.uuid), podcast: podcast)).toList(),
+        content = ListView.builder(
+          padding: widget.padding,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: podcasts.length,
+          itemBuilder: (context, index) {
+            final podcast = podcasts[index];
+            return SizedBox(
+              child: HorizontalPodcastCard(
+                key: Key(podcast.uuid),
+                podcast: podcast,
+              ),
+            );
+          },
         );
         break;
       case DisplayType.cards:
-  content = Container(
-    height: widget.height,
-    child: ListView(
-      padding: widget.padding,
-      shrinkWrap: true,
-      scrollDirection: Axis.horizontal,
-      children: podcasts.map((podcast) => SizedBox(
-        width: widget.itemWidth,
-        height: widget.height,
-        child: PodcastCard(
-          key: Key(podcast.uuid),
-          podcast: podcast,
+      default:
+        content = SizedBox(
           height: widget.height,
-          width: widget.itemWidth,
-        ),
-      )).toList(),
-    ),
-  );
-  break;
+          child: ListView.builder(
+            padding: widget.padding,
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            itemCount: podcasts.length,
+            itemBuilder: (context, index) {
+              final podcast = podcasts[index];
+              return SizedBox(
+                width: widget.itemWidth,
+                height: widget.height,
+                child: PodcastCard(
+                  key: Key(podcast.uuid),
+                  podcast: podcast,
+                ),
+              );
+            },
+          ),
+        );
+        break;
     }
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +139,7 @@ class _PodcastSectionState extends State<PodcastSection> {
           if (widget.title != null)
             Padding(
               padding: const EdgeInsets.only(left: 16, bottom: 8),
-              child: Text(widget.title!, style: widget.titleStyle ?? TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              child: Text(widget.title!, style: widget.titleStyle ?? const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
             ),
             content,
         ],

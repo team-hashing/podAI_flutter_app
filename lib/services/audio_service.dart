@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:just_audio/just_audio.dart';
@@ -28,15 +29,15 @@ class AudioService {
   Future<void> initialize(List<Podcast> podcasts) async {
     await loadAllPodcastProgress(podcasts);
   }
+
 Future<void> setCurrentPodcast(Podcast podcast) async {
   try {
     stopPositionListener();
     _currentPodcast = podcast;
-
     String audioUrl = await StoreService.instance.accessFile(podcast.uuid, Types.audio);
     print('Setting audio URL: $audioUrl');
     print('Initial position: ${podcast.progress} ms');
-    
+
     await audioPlayer.setUrl(audioUrl).then((_) async {
       // After setting the audio source, seek to the last known position
       Duration initialPosition = Duration(milliseconds: podcast.progress);
@@ -115,14 +116,19 @@ Future<void> loadAllPodcastProgress(List<Podcast> podcasts) async {
 
   void seekForward10Seconds() {
     final position = _audioPlayer.position;
-    final newPosition = min(_audioPlayer.duration?.inMilliseconds ?? 0, position.inMilliseconds + Duration(seconds: 10).inMilliseconds);
+    final newPosition = min(_audioPlayer.duration?.inMilliseconds ?? 0, position.inMilliseconds + const Duration(seconds: 10).inMilliseconds);
     _audioPlayer.seek(Duration(milliseconds: newPosition));
   }
 
   void seekBackward10Seconds() {
     final position = _audioPlayer.position;
-    final newPosition = max(0, position.inMilliseconds - Duration(seconds: 10).inMilliseconds);
+    final newPosition = max(0, position.inMilliseconds - const Duration(seconds: 10).inMilliseconds);
     _audioPlayer.seek(Duration(milliseconds: newPosition));
+  }
+
+
+  void setSpeed(double speed) {
+    _audioPlayer.setSpeed(speed);
   }
 
   void dispose() {

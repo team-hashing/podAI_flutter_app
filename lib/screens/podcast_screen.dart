@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:podai/services/audio_service.dart';
 import 'package:podai/widgets/audio_player.dart';
-import 'package:rxdart/rxdart.dart' as rxdart;
 
-import 'package:podai/models/models.dart';
 import 'package:podai/widgets/widgets.dart';
 import 'package:podai/services/services.dart';
 
@@ -27,19 +25,32 @@ class _PodcastScreenState extends State<PodcastScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-      title: const Text('Now playing'),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.pop(context);
-        },
+    return Container(
+
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF4A148C), // Purple
+            Color(0xFF000000), // Black
+          ],
+        ),
       ),
-      backgroundColor: Colors.transparent,
+      child: Scaffold(
+        appBar: AppBar(
+        title: const Text('Now playing'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: Colors.transparent,
+        ),
+        backgroundColor: Colors.transparent,
+        body: const AudioPlayerWidget(),
       ),
-      backgroundColor: Colors.purple[50],
-      body: const AudioPlayerWidget(),
     );
   }
 

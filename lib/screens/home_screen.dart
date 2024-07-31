@@ -4,15 +4,17 @@ import 'package:podai/services/services.dart';
 import 'package:podai/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-  List<Podcast> podcasts = [];
+  List<Podcast> allPodcasts = [];
+  bool isSearching = false;
+  List<Podcast> searchResults = [];
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -21,23 +23,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void loadPodcasts() async {
-    List<Podcast> podcasts = await DatabaseService.instance.fetchAllPodcasts();
+    allPodcasts = await FetchPodcastsService().fetchAllPodcasts();
     setState(() {});
   }
 
-
-bool isSearching = false;
-List<Podcast> searchResults = [];
-TextEditingController searchController = TextEditingController();
-
-
-void startSearch() async {
-  List<Podcast> podcasts = await DatabaseService.instance.fetchAllPodcasts();
-  setState(() {
-    isSearching = true;
-    searchResults.addAll(podcasts);
-  });
-}
+  void startSearch() {
+    setState(() {
+      isSearching = true;
+      searchResults.addAll(allPodcasts);
+    });
+  }
 
   void cancelSearch() {
     setState(() {
@@ -50,16 +45,15 @@ void startSearch() async {
   void searchPodcasts(String query) {
     if (query.isEmpty) {
       setState(() {
-        searchResults.addAll(podcasts);
+        searchResults.addAll(allPodcasts);
       });
       return;
     }
-    final results = podcasts.where((podcast) {
+    final results = allPodcasts.where((podcast) {
       final titleLower = podcast.name.toLowerCase();
       final searchLower = query.toLowerCase();
       return titleLower.contains(searchLower);
     }).toList();
-
     setState(() {
       searchResults = results;
     });
@@ -69,70 +63,91 @@ void startSearch() async {
   Widget build(BuildContext context) {
     AudioService audioService = AudioService.instance;
     return Scaffold(
-      appBar: AppBar(
-        leading: isSearching
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: cancelSearch,
-              )
-            : null,
-        backgroundColor: Colors.transparent,
-        title: isSearching
-            ? TextField(
-                controller: searchController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search Podcasts...',
-                  border: InputBorder.none,
-                ),
-                onChanged: searchPodcasts,
-              )
-            : null,
-        actions: isSearching
-            ? []
-            : [
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: startSearch,
-                ),
-              ],
-      ),
       body: Stack(
         children: [
-          isSearching
-          ? ListView.builder(
-              itemCount: searchResults.length,
-              itemBuilder: (context, index) {
-                final podcast = searchResults[index];
-                return HorizontalPodcastCard(podcast: podcast);
-              },
-            ) : 
-          SingleChildScrollView(
-            
-            padding: EdgeInsets.only(bottom: audioService.getCurrentPodcast() != null ? 200:0),
-            child: Column(
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color.fromARGB(255, 36, 23, 56), // Purple
+                  Color(0xFF000000), // Black
+                ],
+              ),
+            ),
+          ),
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              leading: isSearching
+                  ? IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: cancelSearch,
+                    )
+                  : null,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              title: isSearching
+                  ? TextField(
+                      controller: searchController,
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                        hintText: 'Search Podcasts...',
+                        hintStyle: TextStyle(color: Colors.white),
+                        border: InputBorder.none,
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      onChanged: searchPodcasts,
+                    )
+                  : const Text(
+                      'Home',
+                      style: TextStyle(color: Colors.white),
+                    ),
+              actions: isSearching
+                  ? []
+                  : [
+                      IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: startSearch,
+                        color: Colors.white,
+                      ),
+                    ],
+            ),
+            body: Stack(
               children: [
-                PodcastSection(
-                  key: const Key('recommended_section'),
-                  displayType: DisplayType.grid,
-                  gridCrossAxisCount: 3,
-                  title: 'Recommended',
-                ),
-                PodcastSection(
-                  key: const Key('trending_section'),
-                  displayType: DisplayType.list,
-                  title: 'Trending',
-                ),
-                PodcastSection(
-                  key: const Key('new_releases_section'),
-                  displayType: DisplayType.cards,
-                  title: 'New Releases',
-                  podcastType: PodcastType.user,
-                ),
+                isSearching
+                    ? ListView.builder(
+                        itemCount: searchResults.length,
+                        itemBuilder: (context, index) {
+                          final podcast = searchResults[index];
+                          return HorizontalPodcastCard(podcast: podcast);
+                        },
+                      )
+                    : SingleChildScrollView(
+                        padding: EdgeInsets.only(
+                            bottom: audioService.getCurrentPodcast() != null
+                                ? 200
+                                : 0),
+                        child: const Column(
+                          children: [
+                            PodcastSection(
+                              key: Key('new_releases_section'),
+                              displayType: DisplayType.cards,
+                              title: 'New Releases',
+                              podcastType: PodcastType.user,
+                            ),
+                            PodcastSection(
+                              key: Key('trending_section'),
+                              displayType: DisplayType.list,
+                              title: 'Trending',
+                            ),
+                          ],
+                        ),
+                      ),
               ],
             ),
           ),
-          
         ],
       ),
     );

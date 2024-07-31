@@ -1,3 +1,5 @@
+import 'package:podai/services/services.dart';
+
 class Podcast {
   final String uuid;
   final String name;
@@ -45,15 +47,29 @@ class Podcast {
   }
   
   // Create a Podcast object from a map
-  factory Podcast.fromMap(Map<String, dynamic> map, String uuid) {
+  static Future<Podcast> fromMap(Map<String, dynamic> map, String uuid) async {
+
     return Podcast(
       uuid: uuid,
       name: map['name'],
       creator: map['user_id'],
       progress: 0,
       createdAt: DateTime.now(), //mocked
-      likes: 10, //map['likes'],
-      likedBy: [],//List<String>.from(map['liked_by']),
+      likes: map['likes'],
+      likedBy: List<String>.from(map['liked_by']),
+    );
+  }
+
+  //create a podcast object from the cache map
+  factory Podcast.fromCacheMap(Map<String, dynamic> map) {
+    return Podcast(
+      uuid: map['uuid'],
+      name: map['title'],
+      creator: map['creator'],
+      progress: map['progress'],
+      createdAt: DateTime.parse(map['createdAt']),
+      likes: map['likes'],
+      likedBy: List<String>.from(map['likedBy']),
     );
   }
 
