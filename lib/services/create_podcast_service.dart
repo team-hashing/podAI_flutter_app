@@ -5,7 +5,7 @@ import 'package:podai/services/services.dart';
 class CreatePodcastService {
   final String url = 'http://34.170.203.169:8000/api/generate_podcast';
 
-  Future<void> generatePodcast(String subject, String podcastName) async {
+  Future<bool> generatePodcast(String subject, String podcastName) async {
     String userId = AuthService().getCurrentUser()!.uid;
 
     final Map<String, String> body = {
@@ -23,13 +23,16 @@ class CreatePodcastService {
       if (response.statusCode == 200) {
         // Podcast generation successful
         print('Podcast generated successfully');
+        return true;
       } else {
         // Handle error
         print('Failed to generate podcast. Status code: ${response.statusCode}');
+        return false;
       }
     } catch (e) {
       // Handle exception
       print('Error generating podcast: $e');
+      return false;
     }
   }
 }

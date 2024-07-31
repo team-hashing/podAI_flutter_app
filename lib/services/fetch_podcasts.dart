@@ -4,19 +4,21 @@ import 'package:podai/models/podcast_model.dart';
 import 'package:podai/services/audio_service.dart';
 import 'package:podai/services/auth_service.dart';
 import 'package:podai/services/cache_service.dart';
-
 class FetchPodcastsService {
   final String url_by_likes =
       'http://34.170.203.169:8000/api/podcasts_by_likes';
   final String url_creator = 'http://34.170.203.169:8000/api/podcasts';
   String userId = AuthService().getCurrentUser()!.uid;
 
-  Future<List<Podcast>> fetchAllPodcasts() async {
-    List<Podcast> cachedPodcasts =
-        await CacheService.instance.getCachedPodcasts('popular_podcasts');
-    if (cachedPodcasts.isNotEmpty) {
-      return cachedPodcasts;
+  Future<List<Podcast>> fetchAllPodcasts({bool forceFetch = false}) async {
+    List<Podcast> cachedPodcasts = [];
+    if (!forceFetch) {
+      cachedPodcasts = await CacheService.instance.getCachedPodcasts('popular_podcasts');
+      if (cachedPodcasts.isNotEmpty) {
+        return cachedPodcasts;
+      }
     }
+
     try {
       final Map<String, String> body = {
         'user_id': userId,
@@ -31,25 +33,39 @@ class FetchPodcastsService {
         List<Future<Podcast>> podcastFutures = data
             .map((podcast) => Podcast.fromMap(podcast, podcast['id']))
             .toList();
-        List<Podcast> podcasts = await Future.wait(podcastFutures);
-        await AudioService.instance.loadAllPodcastProgress(podcasts);
-        await CacheService.instance.cachePodcasts('popular_podcasts', podcasts);
-        return podcasts;
+        List<Podcast> fetchedPodcasts = await Future.wait(podcastFutures);
+        await AudioService.instance.loadAllPodcastProgress(fetchedPodcasts);
+
+        // Combine cached and fetched podcasts, ensuring no duplicates
+        Map<String, Podcast> podcastMap = {
+          for (var podcast in cachedPodcasts) podcast.uuid: podcast
+        };
+        for (var podcast in fetchedPodcasts) {
+          podcastMap[podcast.uuid] = podcast;
+        }
+        List<Podcast> updatedPodcasts = podcastMap.values.toList();
+
+        // Cache the updated list of podcasts
+        await CacheService.instance.cachePodcasts('popular_podcasts', updatedPodcasts);
+
+        return updatedPodcasts;
       } else {
         print('Failed to fetch podcasts. Status code: ${response.statusCode}');
-        return [];
+        return cachedPodcasts; // Return cached podcasts if fetch fails
       }
     } catch (e) {
       print('Error fetching podcasts: $e');
-      return [];
+      return cachedPodcasts; // Return cached podcasts if an error occurs
     }
   }
 
-  Future<List<Podcast>> fetchPodcastsByCreator() async {
-    List<Podcast> cachedPodcasts =
-        await CacheService.instance.getCachedPodcasts('user_podcasts');
-    if (cachedPodcasts.isNotEmpty) {
-      return cachedPodcasts;
+  Future<List<Podcast>> fetchPodcastsByCreator({bool forceFetch = false}) async {
+    List<Podcast> cachedPodcasts = [];
+    if (!forceFetch) {
+      cachedPodcasts = await CacheService.instance.getCachedPodcasts('user_podcasts');
+      if (cachedPodcasts.isNotEmpty) {
+        return cachedPodcasts;
+      }
     }
 
     try {
@@ -66,17 +82,29 @@ class FetchPodcastsService {
         List<Future<Podcast>> podcastFutures = data
             .map((podcast) => Podcast.fromMap(podcast, podcast['id']))
             .toList();
-        List<Podcast> podcasts = await Future.wait(podcastFutures);
-        await AudioService.instance.loadAllPodcastProgress(podcasts);
-        await CacheService.instance.cachePodcasts('user_podcasts', podcasts);
-        return podcasts;
+        List<Podcast> fetchedPodcasts = await Future.wait(podcastFutures);
+        await AudioService.instance.loadAllPodcastProgress(fetchedPodcasts);
+
+        // Combine cached and fetched podcasts, ensuring no duplicates
+        Map<String, Podcast> podcastMap = {
+          for (var podcast in cachedPodcasts) podcast.uuid: podcast
+        };
+        for (var podcast in fetchedPodcasts) {
+          podcastMap[podcast.uuid] = podcast;
+        }
+        List<Podcast> updatedPodcasts = podcastMap.values.toList();
+
+        // Cache the updated list of podcasts
+        await CacheService.instance.cachePodcasts('user_podcasts', updatedPodcasts);
+
+        return updatedPodcasts;
       } else {
         print('Failed to fetch podcasts. Status code: ${response.statusCode}');
-        return [];
+        return cachedPodcasts; // Return cached podcasts if fetch fails
       }
     } catch (e) {
       print('Error fetching podcasts: $e');
-      return [];
+      return cachedPodcasts; // Return cached podcasts if an error occurs
     }
   }
 }

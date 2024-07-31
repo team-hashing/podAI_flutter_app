@@ -15,11 +15,36 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isSearching = false;
   List<Podcast> searchResults = [];
   TextEditingController searchController = TextEditingController();
+    final ScrollController _scrollController = ScrollController();
 
+
+  
   @override
   void initState() {
     super.initState();
     loadPodcasts();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.atEdge) {
+      if (_scrollController.position.pixels != 0) {
+        _refreshPodcasts();
+      }
+    }
+  }
+
+
+  Future<void> _refreshPodcasts() async {
+    allPodcasts = await FetchPodcastsService().fetchAllPodcasts(forceFetch: true);
+    
   }
 
   void loadPodcasts() async {
@@ -115,38 +140,40 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
             ),
             body: Stack(
-              children: [
-                isSearching
-                    ? ListView.builder(
-                        itemCount: searchResults.length,
-                        itemBuilder: (context, index) {
-                          final podcast = searchResults[index];
-                          return HorizontalPodcastCard(podcast: podcast);
-                        },
-                      )
-                    : SingleChildScrollView(
-                        padding: EdgeInsets.only(
-                            bottom: audioService.getCurrentPodcast() != null
-                                ? 200
-                                : 0),
-                        child: const Column(
-                          children: [
-                            PodcastSection(
-                              key: Key('new_releases_section'),
-                              displayType: DisplayType.cards,
-                              title: 'New Releases',
-                              podcastType: PodcastType.user,
-                            ),
-                            PodcastSection(
-                              key: Key('trending_section'),
-                              displayType: DisplayType.list,
-                              title: 'Trending',
-                            ),
-                          ],
+        children: [
+          isSearching
+              ? ListView.builder(
+                  itemCount: searchResults.length,
+                  itemBuilder: (context, index) {
+                    final podcast = searchResults[index];
+                    return HorizontalPodcastCard(podcast: podcast);
+                  },
+                )
+              : RefreshIndicator(
+                  onRefresh: _refreshPodcasts,
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: EdgeInsets.only(
+                        bottom: audioService.getCurrentPodcast() != null ? 200 : 0),
+                    child: const Column(
+                      children: [
+                        PodcastSection(
+                          key: Key('new_releases_section'),
+                          displayType: DisplayType.cards,
+                          title: 'New Releases',
+                          podcastType: PodcastType.user,
                         ),
-                      ),
-              ],
-            ),
+                        PodcastSection(
+                          key: Key('trending_section'),
+                          displayType: DisplayType.list,
+                          title: 'Trending',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+        ],
+      ),
           ),
         ],
       ),

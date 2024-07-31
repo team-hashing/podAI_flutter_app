@@ -39,9 +39,9 @@ class _PodcastScreenState extends State<PodcastScreen> {
       ),
       child: Scaffold(
         appBar: AppBar(
-        title: const Text('Now playing'),
+        title: const Text('Now playing', style: TextStyle(color: Colors.white)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },

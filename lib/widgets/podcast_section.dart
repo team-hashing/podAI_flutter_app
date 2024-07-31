@@ -53,8 +53,11 @@ class _PodcastSectionState extends State<PodcastSection> {
     List<Podcast> fetchedPodcasts;
     if (widget.podcastType == PodcastType.user) {
       fetchedPodcasts = await FetchPodcastsService().fetchPodcastsByCreator();
+      fetchedPodcasts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } else {
       fetchedPodcasts = await FetchPodcastsService().fetchAllPodcasts();
+      fetchedPodcasts.sort((a, b) => b.likes.compareTo(a.likes));
+
     }
     setState(() {
       podcasts = fetchedPodcasts;
