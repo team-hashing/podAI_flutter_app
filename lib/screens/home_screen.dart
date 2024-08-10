@@ -15,10 +15,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isSearching = false;
   List<Podcast> searchResults = [];
   TextEditingController searchController = TextEditingController();
-    final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
-
-  
   @override
   void initState() {
     super.initState();
@@ -41,15 +39,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   Future<void> _refreshPodcasts() async {
-    allPodcasts = await FetchPodcastsService().fetchAllPodcasts(forceFetch: true);
-    
+    allPodcasts =
+        await FetchPodcastsService().fetchAllPodcasts(forceFetch: true);
   }
 
   void loadPodcasts() async {
     allPodcasts = await FetchPodcastsService().fetchAllPodcasts();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void startSearch() {
@@ -140,40 +139,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
             ),
             body: Stack(
-        children: [
-          isSearching
-              ? ListView.builder(
-                  itemCount: searchResults.length,
-                  itemBuilder: (context, index) {
-                    final podcast = searchResults[index];
-                    return HorizontalPodcastCard(podcast: podcast);
-                  },
-                )
-              : RefreshIndicator(
-                  onRefresh: _refreshPodcasts,
-                  child: SingleChildScrollView(
-                    controller: _scrollController,
-                    padding: EdgeInsets.only(
-                        bottom: audioService.getCurrentPodcast() != null ? 200 : 0),
-                    child: const Column(
-                      children: [
-                        PodcastSection(
-                          key: Key('new_releases_section'),
-                          displayType: DisplayType.cards,
-                          title: 'New Releases',
-                          podcastType: PodcastType.user,
+              children: [
+                isSearching
+                    ? ListView.builder(
+                        itemCount: searchResults.length,
+                        itemBuilder: (context, index) {
+                          final podcast = searchResults[index];
+                          return HorizontalPodcastCard(podcast: podcast);
+                        },
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _refreshPodcasts,
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          padding: EdgeInsets.only(
+                              bottom: audioService.getCurrentPodcast() != null
+                                  ? 200
+                                  : 0),
+                          child: const Column(
+                            children: [
+                              PodcastSection(
+                                key: Key('new_releases_section'),
+                                displayType: DisplayType.cards,
+                                title: 'New Releases',
+                                podcastType: PodcastType.user,
+                              ),
+                              PodcastSection(
+                                key: Key('trending_section'),
+                                displayType: DisplayType.list,
+                                title: 'Trending',
+                              ),
+                            ],
+                          ),
                         ),
-                        PodcastSection(
-                          key: Key('trending_section'),
-                          displayType: DisplayType.list,
-                          title: 'Trending',
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-        ],
-      ),
+                      ),
+              ],
+            ),
           ),
         ],
       ),

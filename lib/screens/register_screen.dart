@@ -27,7 +27,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       try {
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
@@ -35,7 +36,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // Save user data to Firestore
         await _firestore.collection('users').doc(userCredential.user!.uid).set({
           'username': username,
+          
+          'tokens': 5,
           'email': email,
+          'likedPodcasts': [],
           'createdAt': Timestamp.now(),
         });
 
@@ -63,7 +67,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           'Register',
           style: TextStyle(color: Colors.white),
         ),
-        iconTheme: const IconThemeData(color: Colors.white), // Make back arrow white
+        iconTheme:
+            const IconThemeData(color: Colors.white), // Make back arrow white
       ),
       extendBodyBehindAppBar: true,
       body: Container(
@@ -91,7 +96,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       labelStyle: TextStyle(color: Colors.white),
                     ),
                     style: const TextStyle(color: Colors.white),
-                    validator: (val) => val!.isEmpty ? 'Enter a username' : null,
+                    validator: (val) =>
+                        val!.isEmpty ? 'Enter a username' : null,
                     onChanged: (val) {
                       setState(() => username = val);
                     },
@@ -116,7 +122,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     style: const TextStyle(color: Colors.white),
                     obscureText: true,
-                    validator: (val) => val!.length < 6 ? 'Enter a password 6+ chars long' : null,
+                    validator: (val) => val!.length < 6
+                        ? 'Enter a password 6+ chars long'
+                        : null,
                     onChanged: (val) {
                       setState(() => password = val);
                     },
@@ -125,10 +133,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: const Color.fromARGB(255, 56, 39, 97), // Teal color for the button
+                      backgroundColor: const Color.fromARGB(
+                          255, 56, 39, 97), // Teal color for the button
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       textStyle: const TextStyle(fontSize: 18, inherit: false),
-                      minimumSize: const Size.fromHeight(50), // Make button full width
+                      minimumSize:
+                          const Size.fromHeight(50), // Make button full width
                     ),
                     onPressed: _register,
                     child: const Text('Register'),

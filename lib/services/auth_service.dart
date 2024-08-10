@@ -46,6 +46,11 @@ class AuthService {
     return _auth.currentUser;
   }
 
+  Future<DocumentSnapshot> getCurrentUserDetails() async {
+    return await _firestore.collection('users').doc(getCurrentUser()!.uid).get();
+  }
+
+
 
   /*
   Future<User?> signInWithGoogle() async {

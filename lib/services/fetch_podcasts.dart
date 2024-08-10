@@ -4,6 +4,7 @@ import 'package:podai/models/podcast_model.dart';
 import 'package:podai/services/audio_service.dart';
 import 'package:podai/services/auth_service.dart';
 import 'package:podai/services/cache_service.dart';
+
 class FetchPodcastsService {
   final String url_by_likes =
       'http://34.170.203.169:8000/api/podcasts_by_likes';
@@ -12,16 +13,24 @@ class FetchPodcastsService {
 
   Future<List<Podcast>> fetchAllPodcasts({bool forceFetch = false}) async {
     List<Podcast> cachedPodcasts = [];
+    /* 
     if (!forceFetch) {
-      cachedPodcasts = await CacheService.instance.getCachedPodcasts('popular_podcasts');
+      print('EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
+      
+      cachedPodcasts =
+          await CacheService.instance.getCachedPodcasts('popular_podcasts');
       if (cachedPodcasts.isNotEmpty) {
         return cachedPodcasts;
       }
+      
     }
+    */
 
     try {
-      final Map<String, String> body = {
+      final Map<String, dynamic> body = {
         'user_id': userId,
+        'page': 0,
+        'per_page': 10,
       };
       final response = await http.post(
         Uri.parse(url_by_likes),
@@ -46,7 +55,8 @@ class FetchPodcastsService {
         List<Podcast> updatedPodcasts = podcastMap.values.toList();
 
         // Cache the updated list of podcasts
-        await CacheService.instance.cachePodcasts('popular_podcasts', updatedPodcasts);
+        await CacheService.instance
+            .cachePodcasts('popular_podcasts', updatedPodcasts);
 
         return updatedPodcasts;
       } else {
@@ -59,18 +69,24 @@ class FetchPodcastsService {
     }
   }
 
-  Future<List<Podcast>> fetchPodcastsByCreator({bool forceFetch = false}) async {
+  Future<List<Podcast>> fetchPodcastsByCreator(
+      {bool forceFetch = false}) async {
+    // Cache and cache verification
     List<Podcast> cachedPodcasts = [];
     if (!forceFetch) {
-      cachedPodcasts = await CacheService.instance.getCachedPodcasts('user_podcasts');
+      cachedPodcasts =
+          await CacheService.instance.getCachedPodcasts('user_podcasts');
       if (cachedPodcasts.isNotEmpty) {
         return cachedPodcasts;
       }
     }
 
+    // Server request
     try {
-      final Map<String, String> body = {
+      final Map<String, dynamic> body = {
         'user_id': userId,
+        'page': 0,
+        'per_page': 10,
       };
       final response = await http.post(
         Uri.parse(url_creator),
@@ -95,7 +111,8 @@ class FetchPodcastsService {
         List<Podcast> updatedPodcasts = podcastMap.values.toList();
 
         // Cache the updated list of podcasts
-        await CacheService.instance.cachePodcasts('user_podcasts', updatedPodcasts);
+        await CacheService.instance
+            .cachePodcasts('user_podcasts', updatedPodcasts);
 
         return updatedPodcasts;
       } else {

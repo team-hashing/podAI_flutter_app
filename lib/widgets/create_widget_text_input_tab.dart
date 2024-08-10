@@ -78,7 +78,7 @@ class _CreateWidgetTextInputTabState extends State<CreateWidgetTextInputTab> {
                         borderSide: const BorderSide(
                             color: Colors
                                 .white), // Set outline color to white when focused
-                        borderRadius: BorderRadius.circular(
+borderRadius: BorderRadius.circular(
                             10.0), // Match the border radius
                       ),
                     ),
