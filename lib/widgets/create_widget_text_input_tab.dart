@@ -23,14 +23,16 @@ class _CreateWidgetTextInputTabState extends State<CreateWidgetTextInputTab> {
         // Hide keyboard and lose focus when clicking outside the input
         FocusScope.of(context).unfocus();
       },
-      child: Expanded(
-        child: Center(
-          child: Container(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
                 SizedBox(
                   width: double.infinity,
                   child: TextField(
@@ -78,7 +80,7 @@ class _CreateWidgetTextInputTabState extends State<CreateWidgetTextInputTab> {
                         borderSide: const BorderSide(
                             color: Colors
                                 .white), // Set outline color to white when focused
-borderRadius: BorderRadius.circular(
+                        borderRadius: BorderRadius.circular(
                             10.0), // Match the border radius
                       ),
                     ),
@@ -88,47 +90,47 @@ borderRadius: BorderRadius.circular(
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                            isLoading = true;
-                        });
-                        CreatePodcastService()
-                              .generatePodcast(
-                                    _subjectController.text, _nameController.text)
-                              .then((success) {
-                            if (success) {
-                              //add the new podcast to my podcast collections
-                              fetchPodcastsService.fetchPodcastsByCreator(forceFetch: true);
-                              // Show a success SnackBar
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                          'Podcast generated successfully! Go check it on the home screen.'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                              );
+                    onPressed: () {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      CreatePodcastService()
+                          .generatePodcast(
+                              _subjectController.text, _nameController.text)
+                          .then((success) {
+                        if (success) {
+                          //add the new podcast to my podcast collections
+                          fetchPodcastsService.fetchPodcastsByCreator(
+                              forceFetch: true);
+                          // Show a success SnackBar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Podcast generated successfully! Go check it on the home screen.'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
 
-                              // Clear the text fields
-                              _subjectController.clear();
-                              _nameController.clear();
+                          // Clear the text fields
+                          _subjectController.clear();
+                          _nameController.clear();
 
-                              setState(() {
-                                  isLoading = false;
-                              });
-
-                              
-                            } else {
-                              // Show an error SnackBar
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                          'Failed to generate podcast. Please try again.'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                              );
-                            }
-                        });
-                      },                    style: ElevatedButton.styleFrom(
+                          setState(() {
+                            isLoading = false;
+                          });
+                        } else {
+                          // Show an error SnackBar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Failed to generate podcast. Please try again.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple[300],
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
@@ -144,8 +146,10 @@ borderRadius: BorderRadius.circular(
                         : const Text('Submit'),
                   ),
                 ),
-              ],
-            ),
+            ],
+          ),
+              ),
+            ],
           ),
         ),
       ),

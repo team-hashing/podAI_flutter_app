@@ -1,10 +1,11 @@
 import 'dart:convert'; // Import this for jsonEncode
 import 'package:http/http.dart' as http;
 import 'package:podai/services/services.dart';
+import 'package:podai/constants.dart';
 
 
 class CreatePodcastService {
-  final String url = 'http://34.170.203.169:8000/api/generate_podcast';
+  final String url = '$apiUrl/api/generate_podcast';
 
   Future<bool> generatePodcast(String subject, String podcastName) async {
     String userId = AuthService().getCurrentUser()!.uid;
